@@ -1,25 +1,24 @@
 import sys
 import unittest
-sys.path.append("..//")
-import somemodule as sm
+sys.path.append("../sqliteminor/")
+import sqliteminor as sqm
 
 
 class InstantiationTest(unittest.TestCase):
 
 	def setUp(self):
-		self.s= sm.SomeModule("")
+		self.sm = sqm.SQLiteMinor("")
 
-
-	def testMemberResult(self):
-		self.assertEqual(self.s.result, "NONE")
+	def test_result(self):
+		self.assertEqual(self.sm.result, "None")
 			
 
-	def testMemberStatus(self):
-		self.assertEqual(self.s.status, "NONE")
+	def test_status(self):
+		self.assertEqual(self.sm.status, "None")
 
 	
 	def tearDown(self):
-		self.s.__del__()
+		self.sm.__del__()
 
 if __name__ == '__main__':
 
