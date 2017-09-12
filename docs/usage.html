@@ -1,0 +1,686 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sqliteminor: Usage  </title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+	<style>
+		table.sample-table {
+			margin-left: 5%;
+			border: 1px solid black;
+			border-collapse: collapse;
+			width: 90%;
+		}
+	
+		th {
+			text-align: center;
+			border: 1px solid black;
+		}
+
+		td.sample-data {
+			padding-top: 1.5%;
+			padding-bottom: 1.5%;
+			padding-left: 5%;
+			border: 1px solid black;
+		}
+			
+		td.age {
+			padding-left: 2.4%;
+		}
+
+		span.italic {
+			
+			font-style: italic;
+		}
+		
+		span.emphasis {
+			font-style: italic;
+			font-weight: bold;
+		}
+	</style>
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="sqliteminor  documentation" href="#" />
+    <link rel="next" title="sqliteminor package" href="sqliteminor.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sqliteminor.html" title="sqliteminor package"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">sqliteminor documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-sqliteminor-s-documentation">
+<h1>sqliteminor: Usage<a class="headerlink" href="#welcome-to-sqliteminor-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p></p>
+<div class="toctree-wrapper compound">
+</li>
+</ul>
+
+	<ul style="margin-left: -2%">
+		<li><p>Instantiate an Object:</p>
+			<dl><p style="font-style: italic">The sqliteminor object needs a connection (conn) object, which provides a connection to an sqlite database, and the name 
+				of a table in the sqlite database.</p>
+			<p style="font-style: italic">The conn can be created directly or optionally with an <a href="https://github.com/aescwork/sqlitemgr"
+					>sqlitemgr object</a>. </p>
+			<p style="font-style: italic">In Python, the sql statements used to work with an sqlite database table are executed with a cursor.  Once the
+				sqliteminor object has a conn, it creates its own cursor which it uses internally to run sql statements against a database.</p>
+				</dl>
+			<dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">import sqlite3</code>
+				</dd>
+				<dd style="margin-left: 10%">
+					<code class="descname">conn = sqlite3.connect</code><span class="sig-paren">(</span><em>"path/to/db/"</em><span class="sig-paren">)</span>
+				</dd>
+				<dd style="margin-left: 10%">
+					<code class="descname">sm = SQLiteMinor</code><span class="sig-paren">(</span><em>conn, "my_table"</em><span class="sig-paren">)</span>
+				</dd>
+				<dt style="margin-left: 30%"><span class="italic"> or</span></dt>
+				<dd style="margin-left: 10%">
+					<code class="descname">sm = SQLiteMinor</code><span class="sig-paren">(</span><em></em><span class="sig-paren">)</span>
+				</dd>
+			</dl>
+		</li>
+		<br/>
+		<li>Set or re-set the conn and table:
+			<dl> 
+				<dd style="margin-left: 10%">
+					<code class="descname">sm.conn = conn</code>
+				</dd>
+				<dd style="margin-left: 10%">
+					<code class="descname">sm.table = "my_new_table"</code>
+				</dd>
+		</li>
+		<br/>
+		<li>
+			<dl><p style="font-style: italic">The rest of this document supposes a table -- called "trees" -- in a hypothetical database containing
+				data about various kinds of trees, as represented by the chart below.  The names of each column are given with a data type(s) 
+				for each:</p>
+				</dl>
+			<dl>
+		</li>
+		<br/>
+	</ul>
+			<table class="sample-table">
+				<tr>
+					<th><a name="chart"></a>tree_id <br/>(INT)</th>
+					<th>name <br/>(TEXT) </th>
+					<th>tree_type<br/>(TEXT) </th>
+					<th>age<br/>(INT) </th>
+					<th>sample_date<br/>(DATE)(TEXT)</th>
+				</tr>
+				<tr>
+					<td class="sample-data" > 1</td>
+					<td class="sample-data">Ash</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">200</td>
+					<td class="sample-data">2017-05-20</td>
+				<tr>
+				<tr>
+					<td class="sample-data">2</td>
+					<td class="sample-data">Yew</td>
+					<td class="sample-data">evergreen</td>
+					<td class="sample-data age">1000</td>
+					<td class="sample-data">2017-05-20</td>
+				<tr>
+				<tr>
+					<td class="sample-data">3</td>
+					<td class="sample-data">White Pine</td>
+					<td class="sample-data">evergreen</td>
+					<td class="sample-data age">50</td>
+					<td class="sample-data">2017-05-05</td>
+				<tr>
+				<tr>
+					<td class="sample-data">4</td>
+					<td class="sample-data">Scots Pine</td>
+					<td class="sample-data">evergren</td>
+					<td class="sample-data age">120</td>
+					<td class="sample-data">2017-05-09</td>
+				<tr>
+				<tr>
+					<td class="sample-data">5</td>
+					<td class="sample-data">Elm</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">100</td>
+					<td class="sample-data">2017-02-11</td>
+				<tr>
+				<tr>
+					<td class="sample-data">6</td>
+					<td class="sample-data">Sugar Maple</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">120</td>
+					<td class="sample-data">2017-04-25</td>
+				<tr>
+				<tr>
+					<td class="sample-data">7</td>
+					<td class="sample-data">Sycamore</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">75</td>
+					<td class="sample-data">2017-04-10</td>
+				<tr>
+				<tr>
+					<td class="sample-data">8</td>
+					<td class="sample-data">Black Cherry</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">80</td>
+					<td class="sample-data">2017-04-09</td>
+				<tr>
+				<tr>
+					<td class="sample-data">9</td>
+					<td class="sample-data">Douglas Fir</td>
+					<td class="sample-data">evergreen</td>
+					<td class="sample-data age">500</td>
+					<td class="sample-data">201703-20</td>
+				<tr>
+				<tr>
+					<td class="sample-data">10</td>
+					<td class="sample-data">American Chestnut</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">150</td>
+					<td class="sample-data">2017-03-10</td>
+				<tr>
+				<tr>
+					<td class="sample-data">11</td>
+					<td class="sample-data">Elder</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">40</td>
+					<td class="sample-data">2017-02-11</td>
+				<tr>
+				<tr>
+					<td class="sample-data">12</td>
+					<td class="sample-data">Northern Red Oak</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">240</td>
+					<td class="sample-data">2017-02-11</td>
+				<tr>
+				<tr>
+					<td class="sample-data">13</td>
+					<td class="sample-data">Alder Buckthorn</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">900</td>
+					<td class="sample-data">2017-04-14</td>
+				<tr>
+				<tr>
+					<td class="sample-data">14</td>
+					<td class="sample-data">Common Hawthorn</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">900</td>
+					<td class="sample-data">2017-02-11</td>
+				<tr>
+				<tr>
+					<td class="sample-data">15</td>
+					<td class="sample-data">Common Hazel</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">30</td>
+					<td class="sample-data">2017-05-02</td>
+				<tr>
+				<tr>
+					<td class="sample-data">16</td>
+					<td class="sample-data">Midland Hawthorn</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">900</td>
+					<td class="sample-data">2017-02-11</td>
+				<tr>
+				<tr>
+					<td class="sample-data">17</td>
+					<td class="sample-data">Redwood (Cupressaceae)</td>
+					<td class="sample-data">evergreen</td>
+					<td class="sample-data age">900</td>
+					<td class="sample-data">2017-02-11</td>
+				<tr>
+				<tr>
+					<td class="sample-data">18</td>
+					<td class="sample-data">Guelder Rose</td>
+					<td class="sample-data">deciduous</td>
+					<td class="sample-data age">900</td>
+					<td class="sample-data">2017-02-11</td>
+				<tr>
+			</table>
+			<dl><span style="font-style: italic">Working with an sqlite database with Python, the above table would initially be created with the 
+					following statement:</span></dl>
+				<dd style="margin-left: 10%">
+				<code class="descname">cursor.execute</code><span class="sig-paren"
+					>(</span><em>"CREATE TABLE trees(tree_id INT, name TEXT, tree_type TEXT, age INT, sample_date DATE)")</code></em>
+				</dd>
+	<ul style="margin-left: -2%">
+	
+		<br/>
+		<li><p><span class="emphasis"> add()</span> -- Add a Row of Data to a Database Table:</p>
+			<dl><span style="font-style: italic">Pass in a tuple with the data to be added.  </span></dl>
+			<dl><span style="font-style: italic">The tuple must have its members placed in it in the order in which the columns of the
+				table are arranged, left to right.  Or, the data should be placed in the tuple in the same order as the CREATE TABLE 
+				statement shown above:</span></dl>
+			<dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">row_data = (19, "Apple", "deciduous", 20, '2017-07-14')</code>
+				</dd>
+				<dd style="margin-left: 10%">
+					<code class="descname">sm.add</code><span class="sig-paren">(
+						<em>row_data</em><span class="sig-paren">)</code></em>
+				</dd>
+			</dl>
+			<dl><span style="font-style: italic">This method returns the number of rows added (this number should always be 1).<span></dl>
+				<dd style="margin-left: 10%">
+				</dd>
+		</li>
+		<br/>
+		<li><p><span class="emphasis">read_all(select_column="*") </span>-- Get All Rows from the Table:</p>
+			<dl>The <code>select_column</code> argument specifies which columns to return with the row data that is retrieved.  To specify particular
+				column-data of returned rows, pass one or more names of the columns in a list. The default argument is an asterisk -- * -- which means
+				return all the columns in the row.
+			</dl>
+			<dl>The <code>search_scope</code> argument can have one of two possible arguments: 
+				"<span class="emphasis" style="font-style: italic">has-any</span>" or	"<span class="emphasis" style="font-style: italic">has-all</span>".
+				<span class="emphasis">has-any</span> specifies that the search returns any rows which have <span class="emphasis">any or all</span> 
+				of the search values passed in (if more than one search value) with <code>search_value</code>. <span class="emphasis">has-all</span>
+				specifies that only rows which have <span class="italic">all</span> of the search values passed in are returned.
+				</dl>
+			</dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">rows = sm.read_all</code><span class="sig-paren">(</span><em></em><span class="sig-paren">)</code>
+				</dd>
+			</dl>
+			<dl><span style="font-style: italic">Returns a list with all rows in the table. Each row's data is grouped into a tuple.
+				 The list is empty if there are no rows in the database.</span></dl>
+			</dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">print rows</code>	<span style="font-size: .7em; margin-left: 1%; font-style: italic">#prints the raw data in rows</span>
+				</dd>
+				<dt style="margin-left: 30%"><span class="italic"> or</span></dt>
+				<dd style="margin-left: 10%">
+					<code class="descname">for row in rows:</code><br/>
+					<code style="margin-left: 5%" class="descname">print row[0], " -- ", row[1], " -- ", row[2], " -- ", row[3], " -- ", row[4]</code>
+				</dd>
+			</dl>
+		</li>
+		<br/>
+		<li><p><span class="emphasis">read_range(frm, to, col, select_column="*")</span> --  Retrieve a range of rows based on the contents of a specific row:</p>
+			<dl>The <code>select_column</code> argument specifies which columns to return with the row data that is retrieved.  To specify particular
+				column-data of returned rows, pass one or more names of the columns in a list. The default argument is an asterisk -- * -- which means
+				return all the columns in the row.
+			</dl>
+			<dl><span style="font-style: italic">Example, get all the rows whose tree_id is between 2 and 10 (see <a href="#chart">chart</a> above):</span></dl>
+        
+			</dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">rows = sm.read_range</code><span class="sig-paren">(</span><em>2, 10, tree_id</em><span class="sig-paren">)</code>
+				</dd>
+			</dl>
+			<dl><span style="font-style: italic">Returns a list with the retrieved rows in the table.  (This will also include rows with tree_id 2 and 10, if present).
+					Each row's data is grouped into a tuple.
+				 The list is empty if there are no rows in the database.</span></dl>
+			<dl><span style="font-style: italic">Returns None (&lt;type 'NoneType'&gt;) if there was a problem.  </dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">print rows</code>	<span style="font-size: .7em; margin-left: 1%; font-style: italic">#prints the raw data in rows</span>
+				</dd>
+				<dt style="margin-left: 30%"><span class="italic"> or</span></dt>
+				<dd style="margin-left: 10%">
+					<code class="descname">for row in rows:</code><br/>
+					<code style="margin-left: 5%" class="descname">print row[0], " -- ", row[1], " -- ", row[2], " -- ", row[3], " -- ", row[4]</code>
+				</dd>
+			</dl>
+		</li>
+		<br/>
+		<li><p><span class="emphasis">read_head(n=5, select_column="*") </span>-- Retrieve the first <span class="italic">n</span> rows from the table:</p>
+			</dl>
+			<dl><span style="font-style: italic">Pass the number (n) to the method, or the default is 5.(see <a href="#chart">chart</a> above):</span></dl>
+			<dl>The <code>select_column</code> argument specifies which columns to return with the row data that is retrieved.  To specify particular
+				column-data of returned rows, pass one or more names of the columns in a list. The default argument is an asterisk -- * -- which means
+				return all the columns in the row.
+			</dl>
+        
+			</dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">rows = sm.read_head</code><span class="sig-paren">(</span><em>10</em><span class="sig-paren">)</code>
+				</dd>
+				<dt style="margin-left: 30%"><span class="italic">or</span></dt>
+				<dd style="margin-left: 10%">
+					<code class="descname">rows = sm.read_head</code><span class="sig-paren">(</span><em></em><span class="sig-paren">)</code>
+				</dd>
+			</dl>
+			<dl><span style="font-style: italic">Returns a list with the first n rows in the table.  
+				 The list is empty if there are no rows in the database.</span></dl>
+			<dl><span style="font-style: italic">Returns None (&lt;type 'NoneType'&gt;) if there was a problem.
+				 .</span></dl>
+			</dl>
+		</li>
+		<br/>
+		<li><p><span class="emphasis">read_tail(n=5, select_column="*") </span>-- Retrieve the last <span class="italic">n</span> rows from the table:</p>
+			</dl>
+			<dl><span style="font-style: italic">Pass the number (n) to the method, or the default is 5.(see <a href="#chart">chart</a> above):</span></dl>
+			<dl>The <code>select_column</code> argument specifies which columns to return with the row data that is retrieved.  To specify particular
+				column-data of returned rows, pass one or more names of the columns in a list. The default argument is an asterisk -- * -- which means
+				return all the columns in the row.
+			</dl>
+        
+			</dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">rows = sm.read_tail</code><span class="sig-paren">(</span><em>10</em><span class="sig-paren">)</code>
+				</dd>
+				<dt style="margin-left: 30%"><span class="italic">or</span></dt>
+				<dd style="margin-left: 10%">
+					<code class="descname">rows = sm.read_tail</code><span class="sig-paren">(</span><em></em><span class="sig-paren">)</code></span>
+				</dd>
+			</dl>
+			<dl><span style="font-style: italic">Returns a list with the last n rows in the table.  
+				 The list is empty if there are no rows in the database.</span></dl>
+			</dl>
+			<dl><span style="font-style: italic">Returns None (&lt;type 'NoneType'&gt;) if there was a problem.</span>
+		</li>
+		<br/>
+		<li> <p><span class="emphasis">read_search_rows(target_column, search_value, search_scope="has-any", select_column="*") </span>
+					-- Retrieve  rows whose data in the specified column (target_column) contains a search value (search_value):</p>
+			</dl>
+			<dl>The <code>select_column</code> argument specifies which columns to return with the row data that is retrieved.  To specify particular
+				column-data of returned rows, pass one or more names of the columns in a list. The default argument is an asterisk -- * -- which means
+				return all the columns in the row.
+			</dl>
+			<dl>The <code>search_scope</code> argument can have one of two possible arguments: 
+				"<span class="emphasis" style="font-style: italic">has-any</span>" or	"<span class="emphasis" style="font-style: italic">has-all</span>".
+				<span class="emphasis">has-any</span> specifies that the search returns any rows which have <span class="emphasis">any or all</span> 
+				of the search values passed in (if more than one search value) with <code>search_value</code>. <span class="emphasis">has-all</span>
+				specifies that only rows which have <span class="italic">all</span> of the search values passed in are returned.
+				</dl>
+			<dl><span style="font-style: italic">
+				</span></dl>
+			<br/>
+			<dl><span style="font-style: italic">(The following examples use an asterisk -- <span class="sig-paren">*</span> -- in the search_value to
+				specify whether the argument passed in should only be at the beginning, anywhere, or at the end of the specified column of each row.)</dl>
+			<dl><span style="font-style: italic">Example, get all the rows whose 'name' column has "el" in it (see <a href="#chart">chart</a> above):</span></dl>
+				<dd style="margin-left: 5%">
+					<code class="descname">1. rows = sm.read_search_rows</code><span class="sig-paren"
+						>(</span><em>"name", "el" </em><span class="sig-paren">)</code>
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic">#gets all rows whose data in the 'name' column matches "el" exactly</span>
+				</dd>
+			<dt style="margin-left: 30%"><span style="font-style: italic"> (Should return)</span></dt>
+				<dt style="margin-left: 15%"><span style="font-size: .7em; margin-left: 1%; font-style: italic">[ ] (empty)</span></dt><br/>
+				<dd style="margin-left: 5%">
+					<code class="descname">2. rows = sm.read_search_rows</code><span class="sig-paren"
+						>(</span><em>"name", "el*"</em><span class="sig-paren">)</code>
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic"> # gets all rows whose data in the 'name' column 
+							matches "el" at the beginning </span><br/>
+						<span style="font-size: .7em; margin-left: 40%; font-style: italic"> # -- note asterisk at the end of the search_value argument.</span><br/>
+				</dd>
+			<dt style="margin-left: 30%"><span style="font-style: italic"> (Should return) </span></dt>
+			<dt style="margin-left: 15%"><span style="font-size: .7em; margin-left: 1%; font-style: italic">
+					[(5, u'Elm', u'deciduous', 100, datetime.date(2017, 2, 11)), (11, u'Elder', u'deciduous', 40, datetime.date(2017, 2, 11))]
+				</span></dt>
+				<br/>
+				<dd style="margin-left: 5%">
+					<code class="descname">3. rows = sm.read_search_rows</code><span class="sig-paren"
+						>(</span><em>"name", "*el"</em><span class="sig-paren">)</code>
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic">#gets all rows whose data in the 'name' column matches "el" at the end --
+						</span><br/>
+						<span style="font-size: .7em; margin-left: 40%; font-style: italic"># note the location of the asterisk at the beginning of the 
+						argument passed in for the search_value.</span><br/>
+			<dt style="margin-left: 30%"><span style="font-style: italic"> (Should return) </span></dt>
+				</dd>
+				<dt style="margin-left: 15%"><span style="font-size: .7em; margin-left: 1%; font-style: italic"
+					>[(15, u'Common Hazel', u'deciduous', 30, datetime.date(2017, 5, 2))] </span></dt><br/>
+				<dd style="margin-left: 5%">
+					<code class="descname">4. rows = sm.read_search_rows</code><span class="sig-paren"
+						>(</span><em>"name", "*el*"</em><span class="sig-paren">)</code>
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic"> #gets all rows whose data in the 'name' column matches "el" anywhere.</span>
+					<br/><span style="font-size: .7em; margin-left: 40%; font-style: italic">	# -- note the asterisks on either side of the search_value argument.
+					</span> <br/>
+				</dd>
+			<dt style="margin-left: 30%"><span style="font-style: italic"> (Should return) </span></dt>
+				<dt style="margin-left: 15%"><span style="font-size: .7em; margin-left: 1%; font-style: italic"
+					>[(5, u'Elm', u'deciduous', 100, datetime.date(2017, 2, 11)), (11, u'Elder', u'deciduous', 40, datetime.date(2017, 2, 11)), (15, u'Common Hazel', u'deciduous', 30, datetime.date(2017, 5, 2)), (18, u'Guelder Rose', u'deciduous', 900, datetime.date(2017, 2, 11))]
+					</span></dt><br/>
+			<dl><span style="font-style: italic">Returns a list with the last n rows in the table.  </span></dl>
+			<dl><span style="font-style: italic"> The list is empty if there are no rows in the database.</span></dl>
+		</li>
+		<br/>
+
+		<li> 
+			<p><span class="emphasis">read_by_date_part(self, part, column, search_val, select_column="*") </span>
+					-- A method for specifically searching by dates. Retrieve one or more rows whose date has the passed-in day, month or year.  </p>
+			</dl>
+			<dl>The <code>part</code> argument This specifies which part of the date to search by.  There can be one of three values:
+				"<span class="emphasis" style="font-style: italic">day</span>", "<span class="emphasis" style="font-style: italic">month</span>" or
+				"<span class="emphasis" style="font-style: italic">year</span>".  </dl>
+			<dl>The <code>column</code> is the actual name of the column which contains the date.  
+			</dl>
+			<dl>The <code>search_val</code> is the numerical value for the day (calendar date), month or year.
+			</dl>
+			<dl>The <code>select_column</code> argument specifies which columns to return with the row data that is retrieved.  To specify particular
+				column-data of returned rows, pass one or more names of the columns in a list. The default argument is an asterisk -- * -- which means
+				return all the columns in the row.
+			</dl>
+			<br/>
+			<dl><span style="font-style: italic">Example, get all the rows whose <code>column</code> is called 'sample_date', which has '02' (February) for its 
+				<code>part</code>, and whose whose <code>search_val</code> is 'month'.  (see <a href="#chart">chart</a> above):</span></dl>
+				<dd style="margin-left: 5%"><span class="emphasis"><code class="descname">rows = read_by_date_part('month', 'sample_date', '02')</code> </span></dd>
+			<dt style="margin-left: 30%"><span style="font-style: italic"> (Should return row numbers) </span></dt>
+			<dt style="margin-left: 35%"><span style="font-size: .7em; margin-left: 1%; font-style: italic">
+					[5, 11, 12, 14, 16, 17, 18]
+				</span></dt>
+			</dl>
+			<br/>
+			<dl><span style="font-style: italic">Returns a list with the retrieved rows in the table.  
+					Each row's data is grouped into a tuple.
+				 The list is empty if there are no rows in the database.</span></dl>
+			<dl><span style="font-style: italic">Returns None (&lt;type 'NoneType'&gt;) if there was a problem.  </dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">print rows</code><span style="font-size: .7em; margin-left: 1%; font-style: italic">#prints the raw data in rows</span>
+				</dd>
+				<dt style="margin-left: 30%"><span class="italic"> or</span></dt>
+				<dd style="margin-left: 10%">
+					<code class="descname">for row in rows:</code><br/>
+					<code style="margin-left: 5%" class="descname">print row[0], " -- ", row[1], " -- ", row[2], " -- ", row[3], " -- ", row[4]</code>
+				</dd>
+			</dl>
+					
+		<br/>
+		<li><p><span class="emphasis">update(self, target_column, new_val, reference_column, reference_column_value)</span>
+				-- Update one or more rows in a database table.</p>
+			<p>This method uses asterisks as described above.  See <code>read_search_rows</code> for complete details on how to use them in searching 
+				row data.</p>
+			<dl><span style="font-style: italic">Returns a number of how many rows were deleted.  </span></dl>
+			<dl><span style="font-style: italic">Returns None (&lt;type 'NoneType'&gt;) if there was a problem.  </dl>
+			<br/>
+			<dl><span style="font-style: italic">Example, update all of the rows whose "tree_type" column matches exactly a value of "evergreen" 
+			to a value of "coniferous"
+			(see <a href="#chart">chart</a> above):
+			<span></dl>
+			<dl> 
+				<dd style="margin-left: 10%">
+					<code class="descname">number_rows_updated = sm.update</code><span class="sig-paren">(</span>
+						<em>"tree_type", "coniferous", "tree_type", "evergreen"</em><span class="sig-paren">)
+				</dd>
+			</dl>
+			<dl><span style="font-style: italic">Example, update all of the rows whose "name" column has a substring "thorn" somewhere in its name 
+				to a value of "shrub" in its "tree_type" column:
+			<span></dl>
+			<dl> 
+				<dd style="margin-left: 10%">
+					<code class="descname">number_rows_updated = sm.update</code><span class="sig-paren">(</span>
+						<em> "tree_type", "shrub", "name", "*thorn*"</em><span class="sig-paren">)
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic"> # note the asterisks on both sides of search_value.</span>
+				</dd>
+			</dl>
+		</li>
+		<br/>
+		<li><p><span class="emphasis">delete(self, reference_column, ref_column_value, search_scope="has-any")</span> 
+				-- Delete one or more rows in a database table.</p>
+			<dl>The <code>search_scope</code> argument can have one of two possible arguments: 
+				"<span class="emphasis" style="font-style: italic">has-any</span>" or	"<span class="emphasis" style="font-style: italic">has-all</span>".
+				<span class="emphasis">has-any</span> specifies that the search returns any rows which have <span class="emphasis">any or all</span> 
+				of the search values passed in (if more than one search value) with <code>search_value</code>. <span class="emphasis">has-all</span>
+				specifies that only rows which have <span class="italic">all</span> of the search values passed in are returned.
+				</dl>
+			<p>This method uses asterisks as described above.  See <code>read_search_rows</code> for complete details on how to use them in searching 
+				row data.</p>
+			<br/>
+			<dl><span style="font-style: italic">Returns a number of how many rows were deleted.  </span></dl>
+			<dl><span style="font-style: italic">Returns None (&lt;type 'NoneType'&gt;) if there was a problem.  </dl>
+			<br/>
+			<dl><span style="font-style: italic">Example, delete all of the rows whose "tree_type" column has a value of "evergreen"
+					(see <a href="#chart">chart</a> above): 
+			<span></dl>
+			<dl> 
+				<dd style="margin-left: 10%">
+					<code class="descname">number_rows_deleted = sm.delete</code><span class="sig-paren">(</span>
+						<em>"tree_type", "evergreen"</em><span class="sig-paren">)
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic"># number_rows_deleted should = 5. </span>
+				</dd>
+			</dl>
+			<dl><span style="font-style: italic">Example, delete all of the rows whose "name" column has a substring "thorn" somewhere in its name:
+			<span></dl>
+			<dl> 
+				<dd style="margin-left: 10%">
+					<code class="descname">number_rows_deleted = sm.delete</code><span class="sig-paren">(</span>
+						<em>"name", "*thorn*"</em><span class="sig-paren">)
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic"># number_rows_deleted = 3. </span>
+				</dd>
+			</dl>
+		</li>
+		<br/>
+		<li><p>Get the results of the Method Call using the result and status members:</p>
+			<dl><span style="font-style: italic">Did the method call succeed or fail?  Check the result: </span></dl>
+			<dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">sm.result</code>
+				</dd>
+				<dd style="margin-left: 10%">
+					<code class="descname">print sm.result</code>	
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic"># sm.result will either be 'OK' if successful or 'FAIL' if not.</span>
+				</dd>
+			</dl>
+			<dl><span style="font-style: italic"> ... if sm.result is 'FAIL', any error message from a caught exception will be in sm.status:</span></dl>
+				<dd style="margin-left: 10%">
+					<code class="descname">sm.status</code>
+				</dd>
+				<dd style="margin-left: 10%">
+					<code class="descname">print sm.status</code>	
+						<span style="font-size: .7em; margin-left: 1%; font-style: italic"># if 'FAIL', sm.status will contain a message about what happened.</span>
+				</dd>
+			</dl>
+		</li>
+		<br/>
+	</ul>
+	<br/>
+
+
+<a class="reference internal" href="index.html"><span>(Back to Main)</span></a></li>
+	<br/>
+	<br/>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">sqliteminor: Usage</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="sqliteminor.html"
+                        title="next chapter">sqliteminor package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sqliteminor.html" title="sqliteminor package"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">sqliteminor  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Vollund Leysing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>
+<!--11 
+		<li>
+			<dl> 
+				<code class="descname"></code><span class="sig-paren">(</span><em>content</em><span class="sig-paren">)
+				<dd style="margin-left: 10%">
+					<code class="descname"></code><span class="sig-paren">(</span><em>content</em><span class="sig-paren">)
+				</dd>
+				<dd style="margin-left: 10%">
+					<code class="descname"></code><span class="sig-paren">(</span><em>content</em><span class="sig-paren">)
+				</dd>
+			</dl>
+		</li>
+-->

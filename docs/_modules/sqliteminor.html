@@ -1,0 +1,455 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sqliteminor &mdash; sqliteminor  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="sqliteminor  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sqliteminor  documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for sqliteminor</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">..	currentmodule:: sqliteminor</span>
+<span class="sd">	:platform: Unix, Windows</span>
+<span class="sd">	:synopsis:  simple class template</span>
+
+<span class="sd">.. moduleauthor:: Vollund Leysing  aescwork@protonmail.com</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># import sqlite3 as lite	maybe don&#39;t need this import since everything will be done with the conn created outside the class</span>
+
+<div class="viewcode-block" id="SQLiteMinor"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor">[docs]</a><span class="k">class</span> <span class="nc">SQLiteMinor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+		<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">		Args: </span>
+<span class="sd">			db_file_path (str):			The path to the database file with which this object will be working.</span>
+<span class="sd">			conn (Sqlite3.Connection):	A connection object for interfacing with an sqlite database.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">table</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="n">conn</span> <span class="c1"># create the connection outside of this class ... maybe with an object of the sqlitemgr class (see README.txt).</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_cursor</span> <span class="o">=</span> <span class="bp">None</span>
+
+		<span class="k">if</span> <span class="n">conn</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_create_cursor</span><span class="p">()</span>
+
+	<span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">			Just close the connection when deleted.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+	<span class="nd">@property</span>
+	<span class="k">def</span> <span class="nf">conn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">		Get the conn (call it directly: obj.cursor)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span>
+
+	
+	<span class="nd">@conn.setter</span>
+	<span class="k">def</span> <span class="nf">conn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="n">val</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_create_cursor</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="SQLiteMinor.add"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor.add">[docs]</a>	<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add (create) a row in the table whose name is assigned to self.table.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">				members (tuple):	A tuple with the values to be inserted in the database.  The values must be from left to right (first to last)</span>
+<span class="sd">									in the order in which columns of the target table were created.  </span>
+
+<span class="sd">									For example if a table was created with a statement like:</span>
+
+<span class="sd">												CREATE TABLE trees(Id INT, tree_name TEXT, age_in_years INT)</span>
+
+<span class="sd">									and a row is to be inserted for a tree with an Id of 1, a tree_name of &quot;ash&quot;, and age_in_years of 200 then the values </span>
+<span class="sd">									in the members tuple must also be in this order: (1, &quot;ash&quot;, 200).</span>
+
+
+
+<span class="sd">				table (str):		The name of the table to which the row is to be added.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">				Number of rows added or None if there was a problem executing the statement.</span>
+
+<span class="sd">		.. warning::</span>
+<span class="sd">									This method as written can only execute one INSERT at a time.</span>
+
+<span class="sd">		.. note::</span>
+<span class="sd">									If adding a row which contains a date, be sure to render the date in the YYYY-MM-DD format.</span>
+<span class="sd">									Example: &#39;2017-05-20&#39;.  The date can be either a string (corresponding to the TEXT data type in an </span>
+<span class="sd">									sqlite table) or a datetime.date object (corresponding to the DATE data type in an sqlite table).</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">placeholders</span> <span class="o">=</span> <span class="s2">&quot;(&quot;</span>
+		<span class="n">c</span> <span class="o">=</span> <span class="mi">1</span>
+		<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">:</span>						
+			<span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">members</span><span class="p">):</span> 
+				<span class="n">placeholders</span> <span class="o">=</span> <span class="n">placeholders</span> <span class="o">+</span> <span class="s2">&quot;?)&quot;</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">placeholders</span> <span class="o">=</span> <span class="n">placeholders</span> <span class="o">+</span> <span class="s2">&quot;?, &quot;</span>
+			<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="mi">1</span>
+
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exec_stat</span><span class="p">(</span><span class="s2">&quot;INSERT INTO &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">+</span> <span class="s2">&quot; VALUES&quot;</span> <span class="o">+</span> <span class="n">placeholders</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">members</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="SQLiteMinor.read_all"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor.read_all">[docs]</a>	<span class="k">def</span> <span class="nf">read_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Retrieve all rows from the table.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">				None</span>
+<span class="sd">			</span>
+<span class="sd">		Returns:</span>
+<span class="sd">			rows (list): A list containing each row retrieved (rows contain all of their columns)</span>
+<span class="sd">							 or None if there was a problem executing the statement.</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+			
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exec_stat</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">,</span>  <span class="s2">&quot;read_all&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SQLiteMinor.read_range"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor.read_range">[docs]</a>	<span class="k">def</span> <span class="nf">read_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frm</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Retrieve a group of rows from a table whose data in a specified column (col) falls within a certain range.  The range is assessed</span>
+<span class="sd">		as being composed of values between and including a greater-than- and a less-than- reference value: &#39;frm&#39; and &#39;to&#39;.  </span>
+
+<span class="sd">		Args:</span>
+<span class="sd">				frm (str) (int), (datetime.date) ...(others):	&quot;from&quot;, the starting value of the range of values to be retrieved.  </span>
+<span class="sd">				to (str) (int), (datetime.date) ...(others):	the ending value of the range of values to be retrieved.  </span>
+<span class="sd">				col (str) (int), (datetime.date) ...(others):	the actual name of the column of the table where the values are stored.</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">				rows (list): A list containing each row retrieved (rows contain all of their columns) or None if there was a problem executing the statement.</span>
+
+<span class="sd">		.. note:</span>
+<span class="sd">				Values are returned according to the type they are stored as in the table.  For instance, if a date is stored in a column</span>
+<span class="sd">				whose sqlite type is DATE, a (python) datetime.date object will probably be returned.  Handle accordingly.  Moreover, values of different</span>
+<span class="sd">				data types may be passed in with &#39;frm&#39; and &#39;to&#39; -- as long as they correspond with the data type of the column of the sqlite</span>
+<span class="sd">				table, the SELECT statement should work.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		
+	
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exec_stat</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">+</span> <span class="s2">&quot; WHERE &quot;</span> <span class="o">+</span> <span class="n">col</span> <span class="o">+</span> <span class="s2">&quot; BETWEEN ? AND ?&quot;</span><span class="p">,</span> <span class="s2">&quot;read_range&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">frm</span><span class="p">,</span> <span class="n">to</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="SQLiteMinor.read_head"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor.read_head">[docs]</a>	<span class="k">def</span> <span class="nf">read_head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Retrieve the first n rows in the table.</span>
+
+<span class="sd">			Args:</span>
+<span class="sd">				number (int):	the number of rows from the top of the table to be returned.</span>
+
+<span class="sd">			Returns:</span>
+<span class="sd">				rows (list): A list containing each row retrieved (rows contain all of their columns) </span>
+<span class="sd">								or None if there was a problem executing the statement.</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exec_stat</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">+</span> <span class="s2">&quot; LIMIT ?&quot;</span><span class="p">,</span> <span class="s2">&quot;read_head&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="SQLiteMinor.read_tail"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor.read_tail">[docs]</a>	<span class="k">def</span> <span class="nf">read_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Retrieve the last n rows in the table.</span>
+
+<span class="sd">			Args:</span>
+<span class="sd">				number (int):	the number of rows from the top of the table to be returned.</span>
+<span class="sd">				col    (str):	the name of a column in the table which the sql statement needs as a reference. This should be a</span>
+<span class="sd">								column that contains an ID number for the row, in order to actually get the last n rows from the table.</span>
+
+<span class="sd">								If this is not passed in, the _ROWID_ column is used.</span>
+
+<span class="sd">			Returns:</span>
+<span class="sd">				rows (list): A list containing each row retrieved (rows contain all of their columns) </span>
+<span class="sd">								or None if there was a problem executing the statement.</span>
+
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">col</span><span class="p">:</span>
+			<span class="n">col</span> <span class="o">=</span> <span class="s2">&quot;_ROWID_&quot;</span>
+
+			
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exec_stat</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">+</span> <span class="s2">&quot; ORDER BY &quot;</span> <span class="o">+</span> <span class="n">col</span> <span class="o">+</span> <span class="s2">&quot; DESC LIMIT ?&quot;</span><span class="p">,</span> <span class="s2">&quot;read_tail&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="SQLiteMinor.read_search_rows"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor.read_search_rows">[docs]</a>	<span class="k">def</span> <span class="nf">read_search_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_col</span><span class="p">,</span> <span class="n">search_val</span><span class="p">,</span> <span class="n">search_specs</span><span class="o">=</span><span class="p">[</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">]):</span>
+
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Retrieve one or more rows whose specified column has the passed-in value.  </span>
+
+<span class="sd">		Args:</span>
+<span class="sd">				target_col (str):					  The name of the column to be searched for the value in search_val.</span>
+<span class="sd">				search_val (str) ...(other):  The value to search for in the column specified by col.  </span>
+<span class="sd">				exact_match (boolean):		  </span>
+<span class="sd">												</span>
+<span class="sd">				search_specs (list) -</span>
+<span class="sd">					[exact_match (boolean), </span>
+<span class="sd">					search_val_at_start (boolean), </span>
+<span class="sd">					search_val_at_end (boolean)] :	</span>
+<span class="sd">											If exact_match is True, 1. have the query look for an exact match, </span>
+<span class="sd">																	2. search_val_at_start and search_val_at_end are disregarded.</span>
+<span class="sd">																	3. Can be used to find a number (as opposed to a string).</span>
+
+<span class="sd">											If search_val_at_start is True, Only return the row if the search_val is at the beginning of</span>
+<span class="sd">											the target_col column specified by target_col.</span>
+<span class="sd">											If search_val_at_end is True, Only look for the search_val if it is at the end of target_col</span>
+<span class="sd">											column specified by target_col.</span>
+
+<span class="sd">											If both search_val_at_start and search_val_at_start are True, the search_val can be anywhere in the</span>
+<span class="sd">											the target_col column.</span>
+<span class="sd">											If both search_val_at_start and search_val_at_start are False, the search_val must match the entire</span>
+<span class="sd">											column.</span>
+<span class="sd">												</span>
+<span class="sd">		Returns:</span>
+
+<span class="sd">			rows (list): A list containing each row retrieved (rows contain all of their columns) </span>
+<span class="sd">							or None if there was a problem executing the statement.</span>
+
+<span class="sd">		.. note:</span>
+<span class="sd">				if search_to_right/search_to_left are used and exact_match is False, this method is best suited for searching strings.</span>
+<span class="sd">	</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+	
+
+		<span class="n">stmt_parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_operator</span><span class="p">(</span><span class="n">target_col</span><span class="p">,</span> <span class="n">search_val</span><span class="p">,</span> <span class="n">search_specs</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exec_stat</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">+</span> <span class="n">stmt_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;read_search_rows&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">stmt_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">))</span></div>
+
+	
+
+<div class="viewcode-block" id="SQLiteMinor.update"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor.update">[docs]</a>	<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_col</span><span class="p">,</span> <span class="n">ref_col_val</span><span class="p">,</span> <span class="n">target_col</span><span class="p">,</span> <span class="n">new_val</span><span class="p">,</span> <span class="n">search_specs</span><span class="o">=</span><span class="p">[</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">]):</span>
+
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Update a value in a column of one or more rows in the table.</span>
+<span class="sd">		</span>
+<span class="sd">		Args:</span>
+<span class="sd">			ref_col (str):		The column whose value is to be used as a reference for finding the column of the row(s) to modify.</span>
+<span class="sd">			ref_col_val (str):	The value the ref_col is to have to indicate its row is to be modified.</span>
+<span class="sd">			target_col (str):	The column which is to receive the new (updated) value.</span>
+<span class="sd">			new_val (...):		The new value for the target_col</span>
+
+<span class="sd">			search_specs (list):</span>
+<span class="sd">								(See read_search_rows)</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">				Number of rows modified or None if there was a problem executing the statement.</span>
+
+<span class="sd">		.. note:</span>
+<span class="sd">				if search_to_right/search_to_left are used and exact_match is False, this method is best suited for searching strings.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		
+		<span class="n">stmt_parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_operator</span><span class="p">(</span><span class="n">ref_col</span><span class="p">,</span> <span class="n">ref_col_val</span><span class="p">,</span> <span class="n">search_specs</span><span class="p">)</span>
+		
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exec_stat</span><span class="p">(</span><span class="s2">&quot;UPDATE &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">+</span> <span class="s2">&quot; SET &quot;</span> <span class="o">+</span> <span class="n">target_col</span> <span class="o">+</span> <span class="s2">&quot; = ?&quot;</span> <span class="o">+</span> <span class="n">stmt_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">new_val</span><span class="p">,</span> <span class="n">stmt_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="SQLiteMinor.delete"><a class="viewcode-back" href="../sqliteminor.html#sqliteminor.SQLiteMinor.delete">[docs]</a>	<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_col</span><span class="p">,</span> <span class="n">ref_col_val</span><span class="p">,</span> <span class="n">search_specs</span><span class="o">=</span><span class="p">[</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">]):</span>
+
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Delete one or more rows in the table.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			ref_col	(str):		The column whose value is to be used as a reference for finding the column of the row(s) to modify.</span>
+<span class="sd">	</span>
+<span class="sd">			ref_val_col (str):	The value the ref_col is to have to indicate its row is to be deleted.</span>
+
+<span class="sd">			search_specs (list):</span>
+<span class="sd">								(See read_search_rows)</span>
+
+<span class="sd">		Returns:</span>
+<span class="sd">				Number of rows modified or None if there was a problem executing the statement.</span>
+
+<span class="sd">		.. note:</span>
+<span class="sd">				if search_to_right/search_to_left are used and exact_match is False, this method is best suited for searching strings.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">stmt_parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_operator</span><span class="p">(</span><span class="n">ref_col</span><span class="p">,</span> <span class="n">ref_col_val</span><span class="p">,</span> <span class="n">search_specs</span><span class="p">)</span>
+		
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exec_stat</span><span class="p">(</span><span class="s2">&quot;DELETE FROM &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">+</span> <span class="n">stmt_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">stmt_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">))</span></div>
+
+	
+	<span class="k">def</span> <span class="nf">_exec_stat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">statement</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">param_tuple</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		General code for executing the read or SELECT queries for all of the methods.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">				statement (str):	The statement to be executed.</span>
+<span class="sd">				method_name(str):	The name of the calling method.</span>
+
+<span class="sd">				</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">ret_val</span> <span class="o">=</span> <span class="bp">None</span>
+	
+		<span class="k">try</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">param_tuple</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="n">param_tuple</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
+
+			<span class="k">if</span> <span class="s2">&quot;SELECT&quot;</span> <span class="ow">in</span> <span class="n">statement</span><span class="p">:</span>
+				<span class="n">ret_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+				<span class="n">ret_val</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+				<span class="n">ret_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor</span><span class="o">.</span><span class="n">rowcount</span>
+
+			<span class="bp">self</span><span class="o">.</span><span class="n">_set_result_and_status</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;In sqliteminor &quot;</span> <span class="o">+</span> <span class="n">method_name</span> <span class="o">+</span> <span class="s2">&quot;(): &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_set_result_and_status</span><span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+	
+		<span class="k">return</span> <span class="n">ret_val</span>
+
+
+	<span class="k">def</span> <span class="nf">_set_result_and_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Set self.result and self.status here to help DRY out the code in the above methods.</span>
+<span class="sd">		</span>
+<span class="sd">		Args:</span>
+<span class="sd">			result (self, string):	the result of the operation performed by the calling method.</span>
+<span class="sd">			status (self, string):	the status (self, description) of the outcome of the operation performed by the calling method.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+
+
+	<span class="k">def</span> <span class="nf">_create_cursor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">			Create the cursor object.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_set_result_and_status</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;In SqliteMinor _create_cursor: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_set_result_and_status</span><span class="p">(</span><span class="s2">&quot;FAIL&quot;</span> <span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">_make_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">search_specs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">			Create and return the variable part of the sql statement and the value for the placeholder</span>
+<span class="sd">			used by some the methods above dealing with SELECTing, UPDATEing or DELETEing one or more rows in a table.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+	
+		<span class="n">operator</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">search_specs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+			<span class="n">operator</span> <span class="o">=</span> <span class="s2">&quot; WHERE &quot;</span> <span class="o">+</span> <span class="n">col</span> <span class="o">+</span> <span class="s2">&quot; = ?&quot;</span>
+
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">operator</span> <span class="o">=</span> <span class="s2">&quot; WHERE &quot;</span> <span class="o">+</span> <span class="n">col</span> <span class="o">+</span> <span class="s2">&quot; LIKE ?&quot;</span> 
+			<span class="k">if</span> <span class="n">search_specs</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+				<span class="n">val</span> <span class="o">=</span> <span class="n">val</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span>
+
+			<span class="k">if</span> <span class="n">search_specs</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> 
+				<span class="n">val</span> <span class="o">=</span> <span class="s2">&quot;%&quot;</span> <span class="o">+</span> <span class="n">val</span>
+
+		<span class="k">return</span> <span class="p">[</span><span class="n">operator</span><span class="p">,</span> <span class="n">val</span><span class="p">]</span></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">sqliteminor  documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Vollund Leysing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>

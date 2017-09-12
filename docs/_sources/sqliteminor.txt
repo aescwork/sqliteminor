@@ -1,0 +1,30 @@
+sqliteminor package
+===================
+
+Submodules
+----------
+
+sqliteminor.mod_test module
+---------------------------
+
+.. automodule:: sqliteminor.mod_test
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+sqliteminor.sqliteminor module
+------------------------------
+
+.. automodule:: sqliteminor.sqliteminor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: sqliteminor
+    :members:
+    :undoc-members:
+    :show-inheritance:

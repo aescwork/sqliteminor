@@ -1,0 +1,88 @@
+# -*- coding: utf-8 -*-
+
+import unittest
+import os
+import sys
+import sqlite3
+import datetime
+
+sys.path.append("../sqliteminor/")
+import sqliteminor as sqm
+
+class ReadRangeTest(unittest.TestCase):
+
+	def setUp(self):
+
+		table_name = "trees"
+
+		self.comp_tree_id_range = []
+		self.comp_tree_sample_date_range = []
+
+		self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+		cursor = self.conn.cursor()
+		cursor.execute("CREATE TABLE trees(tree_id INT, name TEXT, age INT, sample_date DATE)")
+		table_name = "trees"
+
+		cursor.executescript("""
+			INSERT INTO trees VALUES(1, "Ash", 200, '2017-05-20');
+			INSERT INTO trees VALUES(2, "Yew", 1000, '2017-05-10');
+			INSERT INTO trees VALUES(3, "White Pine", 50, '2017-05-05');
+			INSERT INTO trees VALUES(4, "Sugar Maple", 120, '2017-04-25');
+			INSERT INTO trees VALUES(5, "Sycamore", 75, '2017-04-10');
+			INSERT INTO trees VALUES(6, "Black Cherry", 80, '2017-04-09');
+			INSERT INTO trees VALUES(7, "Douglas Fir", 500, '2017-03-20');
+			INSERT INTO trees VALUES(8, "American Chestnut", 150, '2017-03-10');
+			INSERT INTO trees VALUES(9, "Northern Red Oak", 240, '2017-02-11');
+			INSERT INTO trees VALUES(10, "Redwood", 900, '2017-02-11');
+			""")
+	
+	
+		self.comp_name_range = [(6, u'Black Cherry'), (7, u'Douglas Fir'), (9, u'Northern Red Oak'), (10, u'Redwood')] 
+		self.comp_sample_date_range = [(datetime.date(2017, 5, 10), u'Yew'), (datetime.date(2017, 5, 5), u'White Pine'), (datetime.date(2017, 4, 25), u'Sugar Maple'),\
+			 (datetime.date(2017, 4, 10), u'Sycamore'), (datetime.date(2017, 4, 9), u'Black Cherry'), (datetime.date(2017, 3, 20), u'Douglas Fir'), \
+			(datetime.date(2017, 3, 10), u'American Chestnut')]
+		self.comp_tree_id_range = [(3, u'White Pine'), (4, u'Sugar Maple'), (5, u'Sycamore'), (6, u'Black Cherry'), (7, u'Douglas Fir'), (8, u'American Chestnut'), \
+		(9, u'Northern Red Oak')]
+		self.comp_age_range = [(200, u'Ash'), (120, u'Sugar Maple'), (500, u'Douglas Fir'), (150, u'American Chestnut'), (240, u'Northern Red Oak')] 
+
+		self.sm = sqm.SQLiteMinor(self.conn, table_name)
+
+		self.name_range = [(i[0], i[1]) for i in self.sm.read_range("Black", "Sugar", "name")]
+		self.name_range_result = self.sm.result
+		self.sample_date_range = [(i[3], i[1]) for i in self.sm.read_range('2017-03-10', '2017-05-10', "sample_date")]
+		self.name_date_range_result = self.sm.result
+		self.tree_id_range = [(i[0], i[1]) for i in self.sm.read_range(3, 9, "tree_id")]
+		self.name_tree_id_range_result = self.sm.result
+		self.age_range = [(i[2], i[1]) for i in self.sm.read_range(100, 500, "age")]
+		self.name_age_range_result = self.sm.result
+
+
+	def test_read_range(self):
+		self.assertEqual(self.name_range, self.comp_name_range)	
+		self.assertEqual(self.sample_date_range, self.comp_sample_date_range)	
+		self.assertEqual(self.tree_id_range, self.comp_tree_id_range)	
+		self.assertEqual(self.age_range, self.comp_age_range)	
+			
+
+
+	def test_result(self):
+		self.assertEqual(self.name_range_result, "OK")
+		self.assertEqual(self.name_date_range_result, "OK")
+		self.assertEqual(self.name_tree_id_range_result, "OK")
+		self.assertEqual(self.name_age_range_result, "OK")
+
+
+	def tearDown(self):
+
+		self.sm.__del__()
+		del(self.conn)
+
+if __name__ == '__main__':
+	unittest.main()
+
+
+
+
+
+
+

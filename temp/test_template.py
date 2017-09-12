@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-import os
+import sqlite3
 import sys
+
 sys.path.append("../sqliteminor/")
+sys.path.append("../temp/")
+
 import sqliteminor 
+import setup_db
 
 
 class ASampleTest(unittest.TestCase):
 
 	def setUp(self):
-		path_to_db = "../fixtures/sqlm_test.db"
-		self.sm = SQLiteMinor(path_to_db)
+		
+		conn = setup_db.setup_db()
+		self.sm = sqliteminor.SQLiteMinor(self.conn, table_name)
 
 
 	def test_some_method(self):
@@ -29,3 +34,11 @@ class ASampleTest(unittest.TestCase):
 
 if __name__ == '__main__':
 	unittest.main()
+
+
+
+
+
+
+
+
