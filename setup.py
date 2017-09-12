@@ -19,7 +19,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='sqliteminor',
     version='1.1.1',
-    description='Python class for working with sqlite databases.',
+    description='a python wrapper class for reading, updating, and deleting from tables of an sqlite database',
     long_description=long_description,
     url='https://github.com/aescwork/sqliteminor',
     author='aescwork',
