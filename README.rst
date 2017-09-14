@@ -1,6 +1,13 @@
 SQLiteMinor
 ========================
 
+This package can be found at https://github.com/aescwork/sqliteminor. 
+ 
+In the github repository there is sphinx-generated documentation: the main page is docs/index.html. Included in the documentation is a Usage
+file (docs/usage.html) which provides a simple and hopefully helpful explanation about how the methods work and how to call them.
+
+
+
 SQLiteMinor is a simple Python class for reading- and deleting from, updating and adding to a table in an sqlite database. 
 
 The SQLiteMinor object provides basic database table access functionality without the need for writing any sql statements,
@@ -18,8 +25,7 @@ This module was written as a companion to the sqlitemgr module (https://github.c
 This module was originally conceived for the waxtablet Python application, along with the FileWork module (https://github.com/aescwork/filework)
 and the sqlitemgr module (https://github.com/aescwork/sqlitemgr).  
 
-Complete documentation for this module is available in the docs/ directory of this repository.  The main page of the documentation is in docs/index.html.
-Also look for the usage.html page for a basic explanation of how to use the class.
+
 
 
 After installation of this package is complete, trying to use the module might result in the following error: "ImportError: No module named sqlitemgr"
@@ -47,5 +53,35 @@ the following is recommended:
 										    . /etc/profile.d/local_python.sh
 
 		This should cause the python interpreter to locate the sqliteminor.py file in the module.   
+
+
+	On MS Windows:
+		
+		The following was tested on a machine running Windows 10. 
+		
+		(This assumes that Python is installed on the machine.)
+
+		Locate where the package was installed.  On Windows 10, Look for the Python folder.  Its usually right under the C: drive. 
+		The name of the folder probably has the version number in it as well, like "Python27".  Look for the sqliteminor folder: it should
+		be in "Lib\" and then "site-packages\" folder.  
+
+		Open up the System Properties Panel.  (You can find this by clicking on the "Settings" icon and entering "Environment Variables" in the 
+		search bar.  When the panel comes up, Click the "Environment Variables" button.  Under "System variables", click "New" and type in the full path to
+		the sqliteminor folder.
+
+		Test this by opening the command line application and starting the Python interpreter (type the command "python" and press enter).
+		Now try to import the module and instantiate an sqliteminor object.  Type the following:
+	
+		>>> import sqliteminor
+		>>> sg = sqliteminor.SQLiteMinor()
+		>>> sg.result
+
+		If everything went well, 'None' should print out on the screen.  If there was an "ImportError" or any other error, try importing the
+		module again and test as follows: 
+
+
+		>>> import sqliteminor.sqliteminor as sqliteminor
+		>>> sg = sqliteminor.SQLiteMinor()
+		>>> sg.result
 
 
